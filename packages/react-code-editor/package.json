@@ -1,0 +1,69 @@
+{
+  "name": "@codefold/react-code-editor",
+  "version": "0.0.0",
+  "description": "완성형 코드 에디터 UI(<CodeEditor>)와 조각 컴포넌트·훅",
+  "private": true,
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./styles.css": {
+      "source": "./src/styles.css",
+      "default": "./dist/styles.css"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.build.json && node scripts/verify-dist.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@codefold/file-type-detector": "workspace:*",
+    "@codefold/monaco-binding": "workspace:*",
+    "@codefold/virtual-fs": "workspace:*",
+    "@tanstack/react-virtual": "3.14.13",
+    "clsx": "^2.1.1",
+    "dockview": "8.3.1",
+    "dockview-react": "8.3.1",
+    "lucide-react": "^1.48.0",
+    "radix-ui": "^1.6.7",
+    "tailwind-merge": "^3.7.0",
+    "zustand": "5.0.15"
+  },
+  "peerDependencies": {
+    "monaco-editor": ">=0.56.0",
+    "react": ">=19",
+    "react-dom": ">=19"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.7",
+    "@ebay/nice-modal-react": "1.2.13",
+    "@rolldown/plugin-babel": "^0.2.3",
+    "@tailwindcss/vite": "catalog:",
+    "@testing-library/dom": "catalog:",
+    "@testing-library/jest-dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@testing-library/user-event": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "jsdom": "catalog:",
+    "monaco-editor": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "@codefold/monaco-binding",
+  "version": "0.0.0",
+  "description": "Monaco model 관리와 에디터 화면 연결 (React 없음)",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "jsdom": "catalog:",
+    "monaco-editor": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "monaco-editor": ">=0.56.0"
+  }
+}

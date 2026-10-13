@@ -1,0 +1,112 @@
+/*
+ * @codefold/react-code-editor 스타일. 쓰는 쪽은 이 파일 하나를 import한다(ADR-0034).
+ * 쓰는 쪽 페이지를 건드리지 않도록 Tailwind의 기본 초기화(preflight)는 넣지 않고,
+ * 클래스에는 접두어 cf를 붙인다(cf:flex).
+ */
+@layer theme, utilities;
+@import 'dockview/dist/styles/dockview.css';
+@import 'tailwindcss/theme.css' layer(theme) prefix(cf);
+@import 'tailwindcss/utilities.css' layer(utilities);
+@source './';
+
+/*
+ * 색과 크기. 쓰는 쪽에 shadcn 변수(--background 등)가 있으면 그 값을 따르고, 없으면 기본값을 쓴다.
+ * --cf-… 변수를 덮어쓰면 에디터 색만 바꿀 수 있다.
+ */
+:root {
+  --cf-background: var(--background, #ffffff);
+  --cf-foreground: var(--foreground, #0a0a0a);
+  --cf-muted: var(--muted, #f5f5f5);
+  --cf-muted-foreground: var(--muted-foreground, #737373);
+  --cf-accent: var(--accent, #f5f5f5);
+  --cf-accent-foreground: var(--accent-foreground, #171717);
+  /* 트리의 선택된 줄. hover(muted)와 구별되도록 글자색을 조금 섞는다. 라이트·다크 모두 따라간다. */
+  --cf-selected: color-mix(in oklch, var(--cf-foreground) 9%, transparent);
+  --cf-border: var(--border, #e5e5e5);
+  --cf-ring: var(--ring, #a3a3a3);
+  --cf-primary: var(--primary, #171717);
+  --cf-primary-foreground: var(--primary-foreground, #fafafa);
+  --cf-destructive: var(--destructive, #dc2626);
+  --cf-popover: var(--popover, #ffffff);
+  --cf-popover-foreground: var(--popover-foreground, #0a0a0a);
+  --cf-modified: #d97706;
+  --cf-radius: var(--radius, 0.5rem);
+}
+
+@theme inline {
+  --color-background: var(--cf-background);
+  --color-foreground: var(--cf-foreground);
+  --color-muted: var(--cf-muted);
+  --color-muted-foreground: var(--cf-muted-foreground);
+  --color-accent: var(--cf-accent);
+  --color-accent-foreground: var(--cf-accent-foreground);
+  --color-selected: var(--cf-selected);
+  --color-border: var(--cf-border);
+  --color-ring: var(--cf-ring);
+  --color-primary: var(--cf-primary);
+  --color-primary-foreground: var(--cf-primary-foreground);
+  --color-destructive: var(--cf-destructive);
+  --color-popover: var(--cf-popover);
+  --color-popover-foreground: var(--cf-popover-foreground);
+  --color-modified: var(--cf-modified);
+  --radius-md: var(--cf-radius);
+}
+
+/* dockview 색을 에디터 변수에 묶는다. 라이트·다크는 --cf-* 값이 바뀌며 따라간다. */
+.cf-dockview {
+  --dv-group-view-background-color: var(--cf-background);
+  --dv-tabs-and-actions-container-background-color: var(--cf-muted);
+  --dv-tabs-and-actions-container-font-size: 13px;
+  --dv-tabs-and-actions-container-height: 35px;
+  --dv-activegroup-visiblepanel-tab-background-color: var(--cf-background);
+  --dv-activegroup-hiddenpanel-tab-background-color: var(--cf-muted);
+  --dv-inactivegroup-visiblepanel-tab-background-color: var(--cf-background);
+  --dv-inactivegroup-hiddenpanel-tab-background-color: var(--cf-muted);
+  --dv-activegroup-visiblepanel-tab-color: var(--cf-foreground);
+  --dv-activegroup-hiddenpanel-tab-color: var(--cf-muted-foreground);
+  --dv-inactivegroup-visiblepanel-tab-color: var(--cf-foreground);
+  --dv-inactivegroup-hiddenpanel-tab-color: var(--cf-muted-foreground);
+  --dv-tab-divider-color: var(--cf-border);
+  --dv-separator-border: var(--cf-border);
+  --dv-sash-color: transparent;
+  --dv-active-sash-color: var(--cf-ring);
+  --dv-drag-over-background-color: color-mix(in srgb, var(--cf-ring) 20%, transparent);
+  --dv-drag-over-border-color: var(--cf-ring);
+  --dv-icon-hover-background-color: var(--cf-accent);
+}
+
+/* 탭 여백은 FileTab이 준다. dockview 기본 여백(.dv-tab)까지 더하면 한쪽이 20px이 되어 탭이 헐렁해진다. */
+.cf-dockview .dv-tabs-container .dv-tab {
+  padding: 0;
+}
+
+/* 활성 그룹의 활성 탭은 위쪽 선으로 표시한다. 흰 배경과 흐린 탭 줄의 명암 차이만으로는 거의 보이지 않는다. */
+.cf-dockview .dv-active-group .dv-tab.dv-active-tab {
+  box-shadow: inset 0 2px 0 var(--cf-ring);
+}
+
+.cf-dockview .dv-inactive-group .dv-tab.dv-active-tab {
+  box-shadow: inset 0 2px 0 var(--cf-border);
+}
+
+/* 영역이 좁으면(휴대폰) 나눠도 쓸 수 없으므로 나누기 버튼을 감춘다. */
+.cf-dockview {
+  container: cf-area / inline-size;
+}
+
+@container cf-area (width < 480px) {
+  .cf-split-action {
+    display: none;
+  }
+}
+
+/* 늦어질 때만 보이는 안내. 300ms 동안 글자를 감췄다가 보인다. 배경은 처음부터 칠해 뒤가 비치지 않게 한다. */
+.cf-delayed-reveal {
+  animation: cf-delayed-reveal 0s 300ms both;
+}
+
+@keyframes cf-delayed-reveal {
+  from {
+    color: transparent;
+  }
+}

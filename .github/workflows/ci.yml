@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: 타입 검사 · 린트 · 단위 테스트 · 빌드
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+      - run: pnpm --filter @codefold/zip-editor check:bundle
+
+  e2e:
+    name: E2E (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @codefold/zip-editor exec playwright install --with-deps ${{ matrix.browser }}
+      - run: pnpm --filter @codefold/zip-editor exec playwright test --project=${{ matrix.browser }}
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-${{ matrix.browser }}
+          path: apps/zip-editor/test-results
+          retention-days: 7
+
+  perf:
+    # 성능 측정(ADR-0027): 렌더 횟수가 목표를 넘으면 실패하고, 시간 지표는 경고와 산출물로만 남긴다.
+    # 기준 환경은 ubuntu-latest의 Chromium이다.
+    name: 성능 측정 (Chromium)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @codefold/zip-editor exec playwright install --with-deps chromium
+      - run: pnpm --filter @codefold/zip-editor perf
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-results
+          path: apps/zip-editor/perf-results
+          retention-days: 30
